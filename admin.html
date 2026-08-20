@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ruaa — Catalogue manager</title>
+  <meta name="robots" content="noindex">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin">
+  <div class="wrap">
+
+    <!-- ------------------------------ Login gate ----------------------------- -->
+    <div id="gate" class="panel gate">
+      <span class="logo logo--stack">
+        <span class="logo-mark" data-logo aria-hidden="true"></span>
+        <span class="logo-type">
+          <span class="logo-name">Ruaa</span>
+          <span class="logo-sub">official.in</span>
+        </span>
+      </span>
+
+      <p class="kicker gate-kicker">Store team</p>
+      <h2 class="gate-title">Sign in to manage the catalogue</h2>
+
+      <div class="f">
+        <label for="pw">Password</label>
+        <input id="pw" type="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <button class="btn btn--gold btn--block" id="loginBtn">Sign in</button>
+      <p class="hint">Demo password: <b>ruaa123</b> — change it in <code>js/data.js</code>.</p>
+      <p class="hint"><a href="index.html" style="color:var(--brass-soft)">← Back to store</a></p>
+    </div>
+
+    <!-- ------------------------------- Dashboard ----------------------------- -->
+    <div id="dash" class="hidden">
+
+      <div class="admin-top">
+        <div>
+          <p class="kicker">Catalogue manager</p>
+          <h2>Upload a new design</h2>
+        </div>
+        <div style="display:flex; gap:9px">
+          <a class="mini" href="index.html" style="text-decoration:none">View store</a>
+          <button class="mini" id="logoutBtn">Sign out</button>
+        </div>
+      </div>
+
+      <div class="admin-cols">
+
+        <!-- Upload form -->
+        <div class="panel">
+          <div id="flash" class="flash hidden"></div>
+
+          <div class="f">
+            <label for="aName">Design name</label>
+            <input id="aName" placeholder="Zoya Twisted Hoops">
+          </div>
+
+          <div class="two">
+            <div class="f">
+              <label for="aCat">Category</label>
+              <select id="aCat"></select>
+            </div>
+            <div class="f">
+              <label for="aMat">Material</label>
+              <input id="aMat" value="18k gold plated brass">
+            </div>
+          </div>
+
+          <div class="two">
+            <div class="f">
+              <label for="aPrice">Selling price ₹</label>
+              <input id="aPrice" type="number" placeholder="1499">
+            </div>
+            <div class="f">
+              <label for="aMrp">MRP ₹</label>
+              <input id="aMrp" type="number" placeholder="2499">
+            </div>
+          </div>
+
+          <div class="f">
+            <label for="aDesc">Description</label>
+            <textarea id="aDesc" rows="3" placeholder="Chunky twisted hoops with a secure click-top clasp."></textarea>
+          </div>
+
+          <div class="f">
+            <label for="aImg">Product photo</label>
+            <div class="drop" id="drop">
+              <input id="aImg" type="file" accept="image/*">
+              <div class="drop-hint">Drag a photo in, or pick one above.<br>
+                Square photos look best. Keep them under 1&nbsp;MB.</div>
+            </div>
+            <img id="aPreview" class="preview hidden" alt="Preview of the uploaded photo">
+          </div>
+
+          <div class="check">
+            <input id="aStock" type="checkbox" checked>
+            <label for="aStock">In stock and visible on the store</label>
+          </div>
+
+          <button class="btn btn--gold btn--block" id="saveBtn">Publish to catalogue</button>
+          <button class="mini mini--block" id="clearBtn">Clear form</button>
+        </div>
+
+        <!-- Live catalogue -->
+        <div class="panel">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px">
+            <h3 style="font-size:20px">Live catalogue</h3>
+            <span id="adminCount" style="font-size:13px; color:rgba(247,242,238,.55)"></span>
+          </div>
+          <div class="rows" id="adminRows"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

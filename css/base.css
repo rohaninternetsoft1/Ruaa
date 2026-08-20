@@ -1,0 +1,168 @@
+/* ==========================================================================
+   Ruaa — base.css
+   Design tokens, resets, typography and shared components.
+   Change the palette here and the whole site follows.
+   ========================================================================== */
+
+:root{
+  /* Palette — velvet jewellery box */
+  --plum:#3B1F35;
+  --plum-deep:#2A1526;
+  --ink:#241E1C;
+  --shell:#F7F2EE;
+  --shell-2:#EFE6E0;
+  --brass:#C8A24A;
+  --brass-soft:#E3C888;
+
+  /* Type */
+  --display:"Syne", system-ui, sans-serif;
+  --body:"Manrope", system-ui, sans-serif;
+  --wordmark:"Playfair Display", Georgia, "Times New Roman", serif;
+
+  /* The logo takes this colour everywhere. Set it to #7C1A22 for the deep red
+     of the printed logo, or leave it as the site's plum. */
+  --logo-ink:var(--plum);
+
+  /* Layout */
+  --gutter:clamp(18px, 4.5vw, 64px);
+  --maxw:1240px;
+  --r:14px;
+}
+
+*{ box-sizing:border-box }
+html{ scroll-behavior:smooth }
+
+body{
+  margin:0;
+  background:var(--shell);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,h4{
+  font-family:var(--display);
+  font-weight:800;
+  line-height:1.02;
+  letter-spacing:-0.02em;
+  margin:0;
+}
+p{ margin:0 }
+img{ max-width:100%; display:block }
+button{ font-family:var(--body); cursor:pointer }
+
+:focus-visible{ outline:2.5px solid var(--brass); outline-offset:3px; border-radius:4px }
+
+.wrap{ max-width:var(--maxw); margin:0 auto; padding-inline:var(--gutter) }
+.hidden{ display:none !important }
+
+/* Small uppercase label used above headings */
+.kicker{
+  font-size:11.5px;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  font-weight:700;
+  color:var(--brass);
+}
+.kicker--dark{ color:var(--plum); opacity:.65 }
+
+/* --------------------------------- Buttons -------------------------------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border:0; border-radius:999px; text-decoration:none;
+  font-weight:600; font-size:15px; padding:13px 26px;
+  background:var(--plum); color:var(--shell);
+  transition:transform .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.btn:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(59,31,53,.25) }
+.btn:active{ transform:translateY(0) scale(.98) }
+.btn--gold{ background:var(--brass); color:var(--plum-deep) }
+.btn--gold:hover{ box-shadow:0 12px 24px rgba(200,162,74,.35) }
+.btn--line{
+  background:transparent; color:var(--plum);
+  box-shadow:inset 0 0 0 1.5px rgba(59,31,53,.28);
+}
+.btn--line:hover{ box-shadow:inset 0 0 0 1.5px var(--plum) }
+.btn--sm{ padding:9px 18px; font-size:14px }
+.btn--block{ width:100% }
+.btn[disabled], .btn.is-out{ opacity:.5; pointer-events:none }
+
+/* ---------------------------------- Logo ---------------------------------- */
+/* The lockup: line-art mark on the left, RUAA over its handle on the right.
+   Everything inherits currentColor, so one colour change re-skins the lot. */
+.logo{
+  text-decoration:none; color:var(--logo-ink);
+  display:inline-flex; align-items:center; gap:11px;
+  background:none; border:0; padding:0;
+}
+.logo-mark{ display:block; width:44px; flex:none; transition:width .25s ease }
+.logo-mark svg{ display:block; width:100%; height:auto }
+.logo-type{ display:flex; flex-direction:column; gap:3px }
+.logo-name{
+  font-family:var(--wordmark); font-weight:600; font-size:27px; line-height:.86;
+  letter-spacing:.1em; text-transform:uppercase;
+  transition:font-size .25s ease;
+}
+.logo-sub{
+  font-family:var(--body); font-size:8.5px; font-weight:600;
+  letter-spacing:.34em; text-transform:uppercase; opacity:.6;
+  padding-left:.2em;
+}
+/* Stacked version — mark above the wordmark, for the admin sign-in card. */
+.logo--stack{ flex-direction:column; gap:10px; text-align:center }
+.logo--stack .logo-mark{ width:74px }
+.logo--stack .logo-name{ font-size:34px }
+.logo--stack .logo-type{ align-items:center }
+
+/* Price block — shared by cards and the quick view */
+.price{ margin-top:auto; padding-top:14px; display:flex; align-items:baseline; gap:9px }
+.price .now{ font-family:var(--display); font-weight:700; font-size:19px; color:var(--plum) }
+.price .was{ font-size:14px; color:rgba(36,30,28,.45); text-decoration:line-through }
+.price .off{
+  font-size:11.5px; font-weight:700; color:#1E7A54;
+  background:rgba(30,122,84,.1); padding:3px 8px; border-radius:999px;
+}
+
+/* ------------------------ Scroll reveal + entrances ----------------------- */
+/* Anything marked [data-reveal] starts just below its resting place and
+   settles in when it scrolls into view. Siblings cascade through --i. */
+[data-reveal]{
+  opacity:0;
+  transform:translateY(20px);
+  transition:opacity .65s ease, transform .65s cubic-bezier(.2,.75,.3,1);
+  transition-delay:calc(var(--i, 0) * 70ms);
+}
+[data-reveal].in{ opacity:1; transform:none }
+
+/* ---------------------------------- Toast --------------------------------- */
+.toast-host{
+  position:fixed; left:50%; bottom:26px; transform:translateX(-50%);
+  z-index:90; display:flex; flex-direction:column; align-items:center; gap:9px;
+  pointer-events:none; padding-inline:12px; width:max-content; max-width:92vw;
+}
+.toast{
+  background:var(--plum-deep); color:var(--shell);
+  border:1px solid rgba(200,162,74,.45); border-radius:999px;
+  padding:12px 24px; font-size:14.5px; font-weight:600; text-align:center;
+  box-shadow:0 18px 40px rgba(42,21,38,.35);
+  opacity:0; transform:translateY(14px) scale(.96);
+  transition:opacity .3s ease, transform .3s cubic-bezier(.2,.75,.3,1);
+}
+.toast.in{ opacity:1; transform:none }
+.toast--warn{ border-color:#B03A48 }
+
+/* Screen-reader-only label — visible to assistive tech, not on screen. */
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{ animation:none !important; transition:none !important }
+  html{ scroll-behavior:auto }
+  /* Nothing slides or fades — everything is simply already in place. */
+  [data-reveal]{ opacity:1; transform:none }
+  .toast{ opacity:1; transform:none }
+}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ruaa — Demi-fine jewellery, made to be worn daily</title>
+  <meta name="description" content="18k gold plated, anti-tarnish demi-fine jewellery. Earrings, necklaces, rings and bracelets designed for everyday wear.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/store.css">
+</head>
+<body>
+
+  <!-- The messages cross-fade one at a time — see rotateTicker() in js/shop.js -->
+  <div class="ticker" id="ticker">
+    <span class="tick on">Cute · Affordable · Thoughtful</span>
+    <span class="tick">Anti-tarnish promise · wear it in the shower</span>
+    <span class="tick">Free shipping on orders over ₹999</span>
+    <span class="tick">6-month plating warranty on every piece</span>
+    <span class="tick">Dispatched from Jaipur within 48 hours</span>
+  </div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="wrap bar">
+      <a class="logo" href="index.html" aria-label="Ruaa official.in — home">
+        <span class="logo-mark" data-logo aria-hidden="true"></span>
+        <span class="logo-type">
+          <span class="logo-name">Ruaa</span>
+          <span class="logo-sub">official.in</span>
+        </span>
+      </a>
+
+      <nav class="menu">
+        <button data-jump="Earrings">Earrings</button>
+        <button data-jump="Necklaces">Necklaces</button>
+        <button data-jump="Rings">Rings</button>
+        <button data-jump="Bracelets">Bracelets</button>
+      </nav>
+
+      <div class="tools">
+        <button class="bag" id="bagBtn" aria-label="Open your bag">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M4.6 8h14.8l-1.2 12H5.8z"/><path d="M9 8V6.6a3 3 0 0 1 6 0V8"/>
+          </svg>
+          Bag <span class="count" id="bagCount">0</span>
+        </button>
+        <a class="btn btn--sm btn--line" href="admin.html">Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ---------------------------------- Hero --------------------------------- -->
+  <div class="hero" id="hero">
+    <div class="wrap inner">
+      <div class="hero-copy">
+        <p class="kicker" data-reveal>18k gold plated · Demi-fine</p>
+        <h1 data-reveal>Jewellery you keep on <em>after the party.</em></h1>
+        <p data-reveal>Pieces designed for daily wear — showering, sweating, sleeping. Plated eight times thicker than costume jewellery, so the colour stays put.</p>
+
+        <div class="hero-cta" data-reveal>
+          <button class="btn btn--gold" data-jump="All">Shop the catalogue</button>
+          <a class="btn btn--line" href="#promise">Our promise</a>
+        </div>
+
+        <!-- These numbers count up on first view — countUp() in js/storage.js -->
+        <div class="hero-stats" id="heroStats" data-reveal>
+          <div><b data-count="6"  data-suffix=" mo">6 mo</b>plating warranty</div>
+          <div><b data-count="48" data-suffix=" hr">48 hr</b>dispatch, pan-India</div>
+          <div><b data-count="12" data-suffix="k+">12k+</b>pieces delivered</div>
+        </div>
+      </div>
+
+      <!-- Signature velvet display tray. It leans towards the pointer and a
+           soft light moves from slot to slot — both live in js/shop.js. -->
+      <div class="tray" id="tray" aria-hidden="true">
+        <div class="slot" id="tray1"></div>
+        <div class="slot" id="tray2"></div>
+        <div class="slot" id="tray3"></div>
+        <div class="slot" id="tray4"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- -------------------------------- Catalogue ------------------------------ -->
+  <section class="section" id="catalogue">
+    <div class="wrap">
+      <div class="head" data-reveal>
+        <div>
+          <p class="kicker kicker--dark">The catalogue</p>
+          <h2>Everything in stock, right now.</h2>
+        </div>
+        <p id="countLine">Loading pieces…</p>
+      </div>
+
+      <div class="shopbar">
+        <div class="search">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/>
+          </svg>
+          <input id="search" type="search" autocomplete="off"
+                 placeholder="Search hoops, pearls, stacking rings…"
+                 aria-label="Search the catalogue">
+          <button class="clear hidden" id="clearSearch" aria-label="Clear the search">×</button>
+        </div>
+
+        <div class="sortwrap">
+          <label class="sr-only" for="sort">Sort the catalogue</label>
+          <select id="sort">
+            <option value="featured">Featured</option>
+            <option value="low">Price · low to high</option>
+            <option value="high">Price · high to low</option>
+            <option value="off">Biggest discount</option>
+            <option value="name">Name · A to Z</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filters" id="filters"></div>
+      <div class="grid" id="grid" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ------------------------------ Trust strip ------------------------------ -->
+  <section class="section trust" id="promise">
+    <div class="wrap">
+      <p class="kicker kicker--dark">Why it lasts</p>
+      <h2 class="trust-title">Four things we don&rsquo;t compromise on.</h2>
+
+      <div class="trust-grid">
+        <div class="trust-item" data-reveal>
+          <h4>Real 18k plating</h4>
+          <p>2.5 microns over brass, not a flash coat. That&rsquo;s what stops the fade.</p>
+        </div>
+        <div class="trust-item" data-reveal>
+          <h4>Waterproof finish</h4>
+          <p>A sealed anti-tarnish layer means showers and workouts are fine.</p>
+        </div>
+        <div class="trust-item" data-reveal>
+          <h4>Skin-safe</h4>
+          <p>Nickel and lead free, hypoallergenic posts on every earring.</p>
+        </div>
+        <div class="trust-item" data-reveal>
+          <h4>6-month warranty</h4>
+          <p>If the plating wears within six months, we replate or replace it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- --------------------------------- Footer -------------------------------- -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="foot">
+        <div class="foot-brand">
+          <span class="logo">
+            <span class="logo-mark" data-logo aria-hidden="true"></span>
+            <span class="logo-type">
+              <span class="logo-name">Ruaa</span>
+              <span class="logo-sub">official.in</span>
+            </span>
+          </span>
+          <p>Demi-fine jewellery made in Jaipur, shipped across India.</p>
+        </div>
+
+        <div>
+          <h4>Shop</h4>
+          <ul>
+            <li><button data-jump="Earrings">Earrings</button></li>
+            <li><button data-jump="Necklaces">Necklaces</button></li>
+            <li><button data-jump="Rings">Rings</button></li>
+            <li><button data-jump="Bracelets">Bracelets</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Help</h4>
+          <ul>
+            <li>Shipping &amp; returns</li>
+            <li>Care guide</li>
+            <li>Track your order</li>
+            <li>care@ruaa.in</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Store team</h4>
+          <ul>
+            <li><a href="admin.html">Admin login</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="fine">
+        <span>© 2026 Ruaa Jewellery</span>
+        <span>Prices include GST</span>
+      </div>
+    </div>
+  </footer>
+
+  <button class="totop" id="toTop" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M12 19V6"/><path d="M6 12l6-6 6 6"/>
+    </svg>
+  </button>
+
+  <div id="modalHost"></div>
+  <div id="drawerHost"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/shop.js"></script>
+</body>
+</html>
