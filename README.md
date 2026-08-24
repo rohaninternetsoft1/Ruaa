@@ -79,15 +79,25 @@ save it as `assets/logo.png` (transparent background) and replace that whole
 string with `<img src="assets/logo.png" alt="">`. Its colour comes from
 `--logo-ink` in `css/base.css`.
 
-**Add a category** — add it to `CONFIG.categories` in `js/data.js`. It appears
-in the admin dropdown automatically, and as a filter chip once a product uses it.
+**Add a category** — in the admin panel, click **+ New** beside the Category
+dropdown, type a name and press Add. It is saved in that browser and appears in the
+storefront's top bar and footer straight away, and as a filter chip once a
+design uses it. Under **Store categories** every
+category is listed as a chip with the number of designs using it and an × to
+delete it. A category still in use can&rsquo;t be deleted — move those designs
+first. Deleting one of the five built-ins only hides it: it comes back as a
+dashed chip with a **+** to restore it, and `js/data.js` is never touched.
+
+To add one permanently for everyone, put it in `CONFIG.categories` in
+`js/data.js` instead — that list ships with the site, so it is the one that
+reaches a hosted copy.
 
 **Change the admin password** — `CONFIG.adminPassword` in `js/data.js`.
 
 ## Important: this is a front-end only
 
-Uploaded designs are saved in **localStorage**, which lives in one browser on
-one computer. That is fine for demos and for designing the site, but a customer
+Uploaded designs and any categories you add are saved in **localStorage**, which
+lives in one browser on one computer. That is fine for demos and for designing the site, but a customer
 visiting your hosted site would only see the starter products in `js/data.js`.
 
 To take real orders you need a backend. Three realistic paths:

@@ -34,7 +34,105 @@ const Catalogue = {
   }
 };
 
+/* ------------------------------- Categories ------------------------------- */
+
+/* The categories offered in the admin dropdown: the defaults from CONFIG plus
+   any the store team has added. Only the additions are saved, so editing
+   CONFIG.categories keeps working as the source of truth for the built-ins.
+
+   Like the catalogue, these live in localStorage — one browser, one computer.
+   Moving to a backend means changing the two functions here as well. */
+const Categories = {
+  /* Categories the team typed in themselves. */
+  added(){
+    return readList(CONFIG.categoryKey);
+  },
+
+  /* Built-in categories the team has deleted. They are only put out of sight,
+     never lost, so a delete by mistake can be undone. */
+  hidden(){
+    return readList(CONFIG.hiddenCategoryKey);
+  },
+
+  load(){
+    const gone = this.hidden();
+    const defaults = CONFIG.categories.filter(c => !gone.some(h => sameText(h, c)));
+    return dedupeText(defaults.concat(this.added()));
+  },
+
+  /* True for anything the team made themselves rather than a CONFIG default. */
+  isCustom(name){
+    return !CONFIG.categories.some(c => sameText(c, name));
+  },
+
+  add(name){
+    const clean = String(name).trim().replace(/\s+/g, ' ');
+
+    if (!clean)            return { ok:false, why:'Give the category a name.' };
+    if (clean.length > 24) return { ok:false, why:'Keep the name under 24 characters.' };
+    if (this.load().some(c => sameText(c, clean)))
+      return { ok:false, why:`"${clean}" is already a category.` };
+
+    if (!writeList(CONFIG.categoryKey, this.added().concat(clean)))
+      return { ok:false, why:'Storage is full — could not save that category.' };
+
+    // Adding a name back also un-deletes the built-in of the same name.
+    this.restore(clean);
+    return { ok:true, name:clean };
+  },
+
+  /* Deletes any category. One the team added is dropped outright; a built-in
+     is remembered as hidden so restore() can bring it back. */
+  remove(name){
+    if (this.isCustom(name)){
+      writeList(CONFIG.categoryKey, this.added().filter(c => !sameText(c, name)));
+      return;
+    }
+    if (this.hidden().some(c => sameText(c, name))) return;   // already gone
+    writeList(CONFIG.hiddenCategoryKey, this.hidden().concat(name));
+  },
+
+  restore(name){
+    writeList(CONFIG.hiddenCategoryKey, this.hidden().filter(c => !sameText(c, name)));
+  }
+};
+
 /* --------------------------------- Helpers -------------------------------- */
+
+/* Small JSON list in localStorage — the shape both category lists use. */
+function readList(key){
+  try{
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+  } catch (e){
+    console.warn('Could not read ' + key + ':', e);
+  }
+  return [];
+}
+
+function writeList(key, list){
+  try{
+    localStorage.setItem(key, JSON.stringify(list));
+    return true;
+  } catch (e){
+    console.warn('Could not save ' + key + ':', e);
+    return false;
+  }
+}
+
+/* Category names are compared loosely, so "anklets" cannot be added twice. */
+const sameText = (a, b) => String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+
+const dedupeText = list => {
+  const seen = new Set();
+  return list.filter(item => {
+    const key = String(item).trim().toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
 
 const $  = sel => document.querySelector(sel);
 const $$ = sel => Array.from(document.querySelectorAll(sel));

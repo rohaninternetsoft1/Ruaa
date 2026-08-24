@@ -53,6 +53,59 @@
   border:1px solid rgba(200,162,74,.3);
 }
 
+/* ----------------------------- New categories ----------------------------- */
+.label-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; margin-bottom:7px;
+}
+.label-row label{ margin-bottom:0 }
+
+.link-mini{
+  background:none; border:0; padding:0; color:var(--brass-soft);
+  font-size:11.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  transition:color .18s ease;
+}
+.link-mini:hover{ color:var(--brass) }
+
+.newcat-row{ display:flex; gap:8px; margin-bottom:11px }
+.newcat-row input{ flex:1; min-width:0 }
+.newcat-row .mini{ flex:none }
+
+.catlist{ display:flex; flex-wrap:wrap; align-items:center; gap:7px }
+.catlist-empty{ font-size:13.5px; color:rgba(247,242,238,.45) }
+
+.cat-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(200,162,74,.14); border:1px solid rgba(200,162,74,.3);
+  color:var(--shell); border-radius:999px;
+  padding:5px 7px 5px 13px; font-size:13px; font-weight:600;
+  animation:row-in .35s ease;
+}
+.cat-chip .n{
+  font-size:11px; font-weight:700; opacity:.55;
+  font-variant-numeric:tabular-nums;
+}
+.cat-chip button{
+  background:none; border:0; width:19px; height:19px; padding:0;
+  border-radius:50%; color:rgba(247,242,238,.55);
+  font-size:15px; line-height:1;
+  display:inline-flex; align-items:center; justify-content:center;
+  transition:color .18s ease, background .18s ease;
+}
+.cat-chip button:hover{ color:#fff; background:#B03A48 }
+
+/* A built-in that was deleted — dashed and dimmed, with a + to bring it back. */
+.cat-chip--off{
+  background:none; border-style:dashed;
+  border-color:rgba(247,242,238,.2); color:rgba(247,242,238,.45);
+}
+.cat-chip--off button:hover{ color:var(--plum-deep); background:var(--brass) }
+
+.cat-hint{
+  font-size:12.5px; line-height:1.5; color:rgba(247,242,238,.42);
+  margin-top:11px;
+}
+
 .check{ display:flex; align-items:center; gap:9px; margin:4px 0 18px }
 .check input{ width:auto; accent-color:var(--brass) }
 .check label{

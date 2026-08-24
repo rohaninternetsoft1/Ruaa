@@ -14,6 +14,7 @@ function login(){
     $('#gate').classList.add('hidden');
     $('#dash').classList.remove('hidden');
     items = Catalogue.load();
+    renderCats();
     renderRows();
   } else {
     const gate = $('#gate');
@@ -77,6 +78,109 @@ function wireDrop(){
   zone.addEventListener('drop', e => {
     usePhoto(e.dataTransfer.files[0]);
   });
+}
+
+/* ------------------------------- Categories ------------------------------- */
+
+/* Everything the dropdown should offer: the saved list, plus any category an
+   existing design still uses — so editing an old piece never loses its own. */
+function catOptions(){
+  return dedupeText(Categories.load().concat(items.map(p => p.cat)));
+}
+
+/* Rebuilds the dropdown, keeping the current choice selected where it can. */
+function renderCats(keep){
+  const select = $('#aCat');
+  const want   = keep || select.value;
+
+  select.innerHTML = catOptions()
+    .map(c => `<option${sameText(c, want) ? ' selected' : ''}>${esc(c)}</option>`)
+    .join('');
+
+  renderCatList();
+}
+
+/* How many designs sit in a category right now. */
+function usageOf(name){
+  return items.filter(p => sameText(p.cat, name)).length;
+}
+
+/* Every category the store offers, each with its usage count and a delete
+   button — plus any built-in that was deleted, ready to be put back. */
+function renderCatList(){
+  const live = catOptions();
+  const gone = Categories.hidden().filter(c => !live.some(a => sameText(a, c)));
+  const box  = $('#catList');
+
+  if (!live.length && !gone.length){
+    box.innerHTML = '<span class="catlist-empty">No categories yet — add one above.</span>';
+    return;
+  }
+
+  box.innerHTML =
+    live.map(c => `
+      <span class="cat-chip">${esc(c)}<span class="n">${usageOf(c)}</span>
+        <button data-delcat="${esc(c)}" title="Delete this category"
+                aria-label="Delete the ${esc(c)} category">×</button>
+      </span>`).join('') +
+    gone.map(c => `
+      <span class="cat-chip cat-chip--off">${esc(c)}
+        <button data-recat="${esc(c)}" title="Put this category back"
+                aria-label="Restore the ${esc(c)} category">+</button>
+      </span>`).join('');
+
+  $$('[data-delcat]').forEach(b => {
+    b.addEventListener('click', () => removeCategory(b.dataset.delcat));
+  });
+  $$('[data-recat]').forEach(b => {
+    b.addEventListener('click', () => restoreCategory(b.dataset.recat));
+  });
+}
+
+function toggleNewCat(show){
+  const box = $('#newCat');
+  const on  = show === undefined ? box.classList.contains('hidden') : show;
+
+  box.classList.toggle('hidden', !on);
+  if (on) $('#aNewCat').focus();
+  else $('#aNewCat').value = '';
+}
+
+function addCategory(){
+  const result = Categories.add($('#aNewCat').value);
+
+  if (!result.ok){
+    toast(result.why, 'warn');
+    $('#aNewCat').focus();
+    return;
+  }
+
+  toggleNewCat(false);
+  renderCats(result.name);          // land on the category they just made
+  toast(`Added "${result.name}" — it is now in the store's top bar.`);
+}
+
+function removeCategory(name){
+  const used = usageOf(name);
+
+  if (used){
+    toast(`${used} design${used > 1 ? 's use' : ' uses'} "${name}" — move them first.`, 'warn');
+    return;
+  }
+
+  const builtIn = !Categories.isCustom(name);
+  Categories.remove(name);
+  renderCats();
+
+  toast(builtIn
+    ? `Deleted "${name}". Press + on the greyed chip to put it back.`
+    : `Deleted "${name}".`);
+}
+
+function restoreCategory(name){
+  Categories.restore(name);
+  renderCats();
+  toast(`"${name}" is back in the store's categories.`);
 }
 
 /* --------------------------------- Publish -------------------------------- */
@@ -180,6 +284,7 @@ function flash(msg){
 
 function renderRows(){
   $('#adminCount').textContent = items.length + ' designs';
+  renderCatList();          // a deleted design can free up a category
 
   if (!items.length){
     $('#adminRows').innerHTML =
@@ -209,9 +314,16 @@ function renderRows(){
 /* ----------------------------------- Boot --------------------------------- */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Build the category dropdown from CONFIG so there's one source of truth.
-  $('#aCat').innerHTML = CONFIG.categories
-    .map(c => `<option>${esc(c)}</option>`).join('');
+  // Build the category dropdown: CONFIG's defaults plus anything added here.
+  renderCats();
+
+  $('#newCatBtn').addEventListener('click', () => toggleNewCat());
+  $('#addCatBtn').addEventListener('click', addCategory);
+  $('#cancelCatBtn').addEventListener('click', () => toggleNewCat(false));
+  $('#aNewCat').addEventListener('keydown', e => {
+    if (e.key === 'Enter')  addCategory();
+    if (e.key === 'Escape') toggleNewCat(false);
+  });
 
   $('#loginBtn').addEventListener('click', login);
   $('#pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });

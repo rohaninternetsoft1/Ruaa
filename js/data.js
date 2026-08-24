@@ -11,8 +11,12 @@ const CONFIG = {
   currency: '₹',
   // TODO: move this to a real backend before launch. Anyone can read this file.
   adminPassword: 'rutu1234',
+  // The built-in categories. The store team can add more from the dashboard;
+  // those are saved separately, so this stays the list of defaults.
   categories: ['Earrings', 'Necklaces', 'Rings', 'Bracelets', 'Anklets'],
-  storageKey: 'ruaa-catalogue'
+  storageKey: 'ruaa-catalogue',
+  categoryKey: 'ruaa-categories',
+  hiddenCategoryKey: 'ruaa-categories-hidden'
 };
 
 /* The brand mark: two hands reaching towards each other with a scatter of

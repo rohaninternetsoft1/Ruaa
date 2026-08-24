@@ -76,6 +76,25 @@
             </div>
           </div>
 
+          <!-- Add and delete the categories the store offers -->
+          <div class="f">
+            <div class="label-row">
+              <label>Store categories</label>
+              <button class="link-mini" id="newCatBtn">+ New</button>
+            </div>
+
+            <div class="newcat-row hidden" id="newCat">
+              <input id="aNewCat" placeholder="Anklets" maxlength="24"
+                     autocomplete="off" aria-label="Name of the new category">
+              <button class="mini" id="addCatBtn">Add</button>
+              <button class="mini" id="cancelCatBtn">Cancel</button>
+            </div>
+
+            <div class="catlist" id="catList"></div>
+            <p class="cat-hint">The number is how many designs use it. A category
+              still in use can&rsquo;t be deleted — move those designs first.</p>
+          </div>
+
           <div class="two">
             <div class="f">
               <label for="aPrice">Selling price ₹</label>

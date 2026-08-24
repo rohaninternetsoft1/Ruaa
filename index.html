@@ -35,12 +35,8 @@
         </span>
       </a>
 
-      <nav class="menu">
-        <button data-jump="Earrings">Earrings</button>
-        <button data-jump="Necklaces">Necklaces</button>
-        <button data-jump="Rings">Rings</button>
-        <button data-jump="Bracelets">Bracelets</button>
-      </nav>
+      <!-- Filled by renderNav() from the categories the store team defined -->
+      <nav class="menu" data-nav aria-label="Categories"></nav>
 
       <div class="tools">
         <button class="bag" id="bagBtn" aria-label="Open your bag">
@@ -169,12 +165,7 @@
 
         <div>
           <h4>Shop</h4>
-          <ul>
-            <li><button data-jump="Earrings">Earrings</button></li>
-            <li><button data-jump="Necklaces">Necklaces</button></li>
-            <li><button data-jump="Rings">Rings</button></li>
-            <li><button data-jump="Bracelets">Bracelets</button></li>
-          </ul>
+          <ul data-nav="list"></ul>
         </div>
 
         <div>

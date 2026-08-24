@@ -21,12 +21,16 @@ Anything shared by both pages belongs in `storage.js`.
 - `js/data.js` — `CONFIG` (brand, handle, admin password, categories, storage
   key), the `LOGO` mark, `ART` placeholder SVGs, `SEED` starter products.
   Single source of truth for brand-level settings.
-- `js/storage.js` — the `Catalogue` object (`load`, `save`, `reset`) plus
+- `js/storage.js` — the `Catalogue` object (`load`, `save`, `reset`), the
+  `Categories` store (`load`, `add`, `remove`, `restore`: `CONFIG` defaults minus
+  deleted ones under `CONFIG.hiddenCategoryKey`, plus ones added in the dashboard
+  under `CONFIG.categoryKey`), plus
   helpers `$`, `$$`, `money`, `esc`, `discount`, `shotFor`, and the shared
   UI helpers `toast`, `watchReveals`, `countUp`, `reducedMotion`.
 - `js/shop.js` — storefront: search, filters, sorting, grid, quick view, bag
   drawer, and the hero/tray motion.
-- `js/admin.js` — login, photo upload via FileReader, publish, edit, hide, delete.
+- `js/admin.js` — login, photo upload via FileReader, publish, edit, hide,
+  delete, and creating categories.
 - `css/base.css` — design tokens in `:root`, typography, buttons, logo, price.
 - `assets/favicon.svg` — the browser-tab mark.
 - `css/store.css` — storefront only. `css/admin.css` — dashboard only.
@@ -58,10 +62,15 @@ glassmorphism, or extra accent colours.
   rather than `alert()` so nothing blocks the page.
 - Scroll-in animation is opt-in markup: add `data-reveal` to an element and
   `watchReveals()` handles the rest.
+- The header nav and the footer Shop list are rendered by `renderNav()` into
+  `[data-nav]` slots from `Categories.load()` — don't hardcode category links.
+  Anything with `data-jump="<category>"` filters the grid; wire new ones with
+  `wireJumps()`.
 
 ## Known limitation
 
-The catalogue is persisted to `localStorage`, so uploads are per-browser. If I
+The catalogue and any added categories are persisted to `localStorage`, so both
+are per-browser. If I
 ask to make uploads real, the intended path is to replace only
 `Catalogue.load` and `Catalogue.save` in `js/storage.js` with Supabase or
 Firebase calls, and to store photos in a bucket instead of base64.

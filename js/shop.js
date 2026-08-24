@@ -38,10 +38,42 @@ function visible(){
   ));
 }
 
+/* ------------------------- Top bar and footer list ------------------------- */
+
+/* Both category lists are built from the same store the dashboard writes to,
+   so a category added there turns up here as soon as the page is loaded. */
+function renderNav(){
+  const list = Categories.load();
+
+  $$('[data-nav]').forEach(box => {
+    const asList = box.dataset.nav === 'list';
+
+    box.innerHTML = list.map(c => {
+      const btn = `<button data-jump="${esc(c)}">${esc(c)}</button>`;
+      return asList ? `<li>${btn}</li>` : btn;
+    }).join('');
+  });
+}
+
+/* Every element that jumps to a category, including the ones just rendered. */
+function wireJumps(){
+  $$('[data-jump]').forEach(el => {
+    if (el.dataset.wired) return;             // don't stack handlers on re-render
+    el.dataset.wired = '1';
+    el.addEventListener('click', () => filterTo(el.dataset.jump));
+  });
+}
+
 /* --------------------------------- Filters -------------------------------- */
 
 function categoriesInUse(){
-  return ['All', ...Array.from(new Set(products.map(p => p.cat)))];
+  const used = dedupeText(products.map(p => p.cat));
+
+  // Keep the chosen category on screen even when nothing uses it yet — you
+  // land here by picking a brand new category from the top bar.
+  if (activeCat !== 'All' && !used.some(c => sameText(c, activeCat))) used.push(activeCat);
+
+  return ['All', ...used];
 }
 
 /* Each chip carries the number of pieces in that category. */
@@ -467,12 +499,24 @@ function initShop(){
     $('#' + id).innerHTML = ART[ART_KEYS[i]];
   });
 
+  renderNav();
   renderFilters();
   renderGrid();
   wireSearch();
+  wireJumps();
 
-  $$('[data-jump]').forEach(el => {
-    el.addEventListener('click', () => filterTo(el.dataset.jump));
+  // The dashboard is usually open in another tab. When it saves, catch up
+  // without needing a refresh.
+  window.addEventListener('storage', e => {
+    if (e.key === CONFIG.categoryKey){
+      renderNav();
+      wireJumps();
+    }
+    if (e.key === CONFIG.storageKey){
+      products = Catalogue.load();
+      renderFilters();
+      renderGrid();
+    }
   });
 
   $('#bagBtn').addEventListener('click', openBag);

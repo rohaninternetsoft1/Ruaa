@@ -38,10 +38,16 @@
 .site-header.slim .logo-name{ font-size:22px }
 .site-header.slim .logo-mark{ width:36px }
 
-.menu{ display:flex; gap:26px }
+/* Grows with the category list — scrolls sideways rather than crushing the
+   logo when the store team adds a few of their own. */
+.menu{
+  display:flex; gap:22px; min-width:0;
+  overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none;
+}
+.menu::-webkit-scrollbar{ display:none }
 .menu button{
   background:none; border:0; padding:4px 0; font-size:15px; font-weight:500;
-  color:var(--ink); opacity:.8; position:relative;
+  color:var(--ink); opacity:.8; position:relative; white-space:nowrap;
 }
 .menu button::after{
   content:""; position:absolute; left:0; right:0; bottom:0; height:1.5px;
@@ -50,7 +56,19 @@
 }
 .menu button:hover{ opacity:1; color:var(--plum) }
 .menu button:hover::after{ transform:scaleX(1) }
-@media (max-width:840px){ .menu{ display:none } }
+/* Narrow screens: the categories drop onto their own scrollable strip under
+   the logo instead of disappearing. */
+@media (max-width:840px){
+  .bar{ height:auto; flex-wrap:wrap; row-gap:0; padding-block:12px }
+  .site-header.slim .bar{ height:auto }
+  .menu{
+    order:3; flex-basis:100%; gap:20px;
+    margin-top:10px; padding-top:10px;
+    border-top:1px solid var(--shell-2);
+    -webkit-overflow-scrolling:touch;
+  }
+  .menu button{ font-size:14.5px; opacity:.9 }
+}
 
 .tools{ display:flex; align-items:center; gap:12px }
 .bag{
