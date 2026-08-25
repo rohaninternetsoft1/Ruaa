@@ -491,8 +491,9 @@ function wireSearch(){
 
 /* ----------------------------------- Boot --------------------------------- */
 
-function initShop(){
-  products = Catalogue.load();
+async function initShop(){
+  await Categories.sync();          // fills the header and footer lists
+  products = await Catalogue.load();
 
   // Fill the hero display tray with four placeholder drawings.
   ['tray1','tray2','tray3','tray4'].forEach((id, i) => {
@@ -505,18 +506,20 @@ function initShop(){
   wireSearch();
   wireJumps();
 
-  // The dashboard is usually open in another tab. When it saves, catch up
-  // without needing a refresh.
-  window.addEventListener('storage', e => {
-    if (e.key === CONFIG.categoryKey){
-      renderNav();
-      wireJumps();
-    }
-    if (e.key === CONFIG.storageKey){
-      products = Catalogue.load();
-      renderFilters();
-      renderGrid();
-    }
+  // Someone publishing a design — in another tab, or on another continent if
+  // Supabase is connected — lands here without anyone pressing refresh.
+  Catalogue.onChange(list => {
+    const fresh = list.length - products.length;
+    products = list;
+    renderFilters();
+    renderGrid();
+    if (fresh > 0) toast(`${fresh} new piece${fresh > 1 ? 's' : ''} just landed.`);
+  });
+
+  Categories.onChange(() => {
+    renderNav();
+    wireJumps();
+    renderFilters();
   });
 
   $('#bagBtn').addEventListener('click', openBag);

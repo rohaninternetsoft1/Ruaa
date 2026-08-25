@@ -9,11 +9,13 @@ let editingId = null;   // set while editing an existing design
 
 /* ---------------------------------- Login --------------------------------- */
 
-function login(){
+async function login(){
   if ($('#pw').value === CONFIG.adminPassword){
     $('#gate').classList.add('hidden');
     $('#dash').classList.remove('hidden');
-    items = Catalogue.load();
+
+    await Categories.sync();
+    items = await Catalogue.load();
     renderCats();
     renderRows();
   } else {
@@ -185,7 +187,7 @@ function restoreCategory(name){
 
 /* --------------------------------- Publish -------------------------------- */
 
-function saveProduct(){
+async function saveProduct(){
   const name  = $('#aName').value.trim();
   const price = Number($('#aPrice').value);
 
@@ -193,6 +195,15 @@ function saveProduct(){
     flash('Add a design name and a selling price to publish.');
     return;
   }
+
+  const btn = $('#saveBtn');
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Publishing…';
+
+  // With Supabase connected the photo goes to the bucket and we keep its URL;
+  // without it, this hands back the same base64 string it was given.
+  const photo = photoData ? await uploadPhoto(photoData, name) : null;
 
   const data = {
     name,
@@ -207,18 +218,26 @@ function saveProduct(){
   if (editingId){
     const p = items.find(x => x.id === editingId);
     Object.assign(p, data);
-    if (photoData) p.img = photoData;
-    flash('Updated "' + name + '".');
+    if (photo) p.img = photo;
   } else {
     items.unshift(Object.assign({
       id:  'p' + Date.now(),
-      img: photoData,
+      img: photo,
       art: ART_KEYS[Math.floor(Math.random() * ART_KEYS.length)]
     }, data));
-    flash('Published "' + name + '" to the catalogue.');
   }
 
-  Catalogue.save(items);
+  const saved = await Catalogue.save(items);
+
+  btn.disabled = false;
+  btn.textContent = label;
+
+  if (!saved) return;                       // Catalogue.save already explained
+
+  flash(editingId
+    ? `Updated "${name}".`
+    : `Published "${name}" — it is live for everyone now.`);
+
   resetForm();
   renderRows();
 }
@@ -245,20 +264,20 @@ function editProduct(id){
   window.scrollTo({ top:0, behavior:'smooth' });
 }
 
-function toggleStock(id){
+async function toggleStock(id){
   const p = items.find(x => x.id === id);
   p.stock = !p.stock;
-  Catalogue.save(items);
+  await Catalogue.save(items);
   renderRows();
   toast(p.stock ? `"${p.name}" is back on the store.` : `"${p.name}" is hidden from the store.`);
 }
 
-function removeProduct(id){
+async function removeProduct(id){
   const p = items.find(x => x.id === id);
   if (!confirm('Remove "' + p.name + '" from the catalogue?')) return;
 
   items = items.filter(x => x.id !== id);
-  Catalogue.save(items);
+  await Catalogue.save(items);
   renderRows();
   toast(`Removed "${p.name}".`);
 }
@@ -332,4 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#clearBtn').addEventListener('click', resetForm);
   $('#aImg').addEventListener('change', readPhoto);
   wireDrop();
+
+  // Another device publishing something shows up here as well.
+  Catalogue.onChange(list => { items = list; renderRows(); });
+  Categories.onChange(() => renderCats());
 });

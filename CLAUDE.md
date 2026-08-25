@@ -67,13 +67,32 @@ glassmorphism, or extra accent colours.
   Anything with `data-jump="<category>"` filters the grid; wire new ones with
   `wireJumps()`.
 
-## Known limitation
+## Where the data lives
 
-The catalogue and any added categories are persisted to `localStorage`, so both
-are per-browser. If I
-ask to make uploads real, the intended path is to replace only
-`Catalogue.load` and `Catalogue.save` in `js/storage.js` with Supabase or
-Firebase calls, and to store photos in a bucket instead of base64.
+`js/storage.js` runs in one of two modes, decided by whether `CONFIG.supabase`
+has a url and key:
+
+- **empty** — catalogue and categories in `localStorage`, per browser. This is
+  the default and must keep working; it is the fallback whenever Supabase is
+  unreachable.
+- **filled in** — Supabase. Tables and policies are in `supabase.sql`. Photos go
+  to the `photos` bucket and the catalogue stores their URL. Live updates arrive
+  through `postgres_changes`.
+
+Rules for anything touching data:
+
+- Only `Catalogue`, `Categories` and `uploadPhoto` know which mode is active.
+  Pages call those and never talk to `localStorage` or `db` directly.
+- `Catalogue.load` and `Catalogue.save` are async — await them.
+  `Categories.load()` stays synchronous by reading a cache that
+  `Categories.sync()` fills.
+- React to changes with `Catalogue.onChange` / `Categories.onChange`. They fire
+  for another tab (localStorage mode) and another visitor (Supabase mode), so
+  neither page needs its own polling.
+- `desc` is a reserved SQL word; the column is `descr` and `rowToProduct` /
+  `productToRow` do the swap. Order is kept in a `pos` column.
+- Category writes replace the whole list, so they are queued through `catWrite`
+  to keep their order. Await `Categories.flush()` if you need certainty.
 
 ## Running it
 

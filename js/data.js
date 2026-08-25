@@ -16,7 +16,19 @@ const CONFIG = {
   categories: ['Earrings', 'Necklaces', 'Rings', 'Bracelets', 'Anklets'],
   storageKey: 'ruaa-catalogue',
   categoryKey: 'ruaa-categories',
-  hiddenCategoryKey: 'ruaa-categories-hidden'
+  hiddenCategoryKey: 'ruaa-categories-hidden',
+
+  /* Leave url and key empty and the site keeps everything in this browser.
+     Fill them in and the catalogue is shared with every visitor, updating
+     live as you publish. Both values are from your Supabase project's
+     Settings → API page; the anon key is meant to be public.
+     Setup steps are in README.md, and the SQL is in supabase.sql. */
+  supabase: {
+    url:    'https://lcpkirgyrvwpfpocmrjh.supabase.co',
+    key:    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGtpcmd5cnZ3cGZwb2NtcmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1NzQxODYsImV4cCI6MjEwMzE1MDE4Nn0.f-2sPgHXuY1ISP4sa51UHMT7unUJP_lfsOkYe7-_-Gc',
+    bucket: 'photos',
+    sdk:    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js'
+  }
 };
 
 /* The brand mark: two hands reaching towards each other with a scatter of

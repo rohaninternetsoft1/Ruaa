@@ -56,9 +56,10 @@ ruaa/
 │   ├── base.css        Colours, fonts, buttons — edit the palette here
 │   ├── store.css       Header, hero, product grid, quick view, footer
 │   └── admin.css       Dashboard styling
+├── supabase.sql        Run once in Supabase to share the catalogue
 ├── js/
-│   ├── data.js         Brand name, logo, password, categories, starter products
-│   ├── storage.js      Saving and loading the catalogue + helpers
+│   ├── data.js         Brand name, logo, password, categories, Supabase keys
+│   ├── storage.js      Catalogue + categories (localStorage or Supabase)
 │   ├── shop.js         Storefront behaviour
 │   └── admin.js        Upload, edit, hide, delete
 └── assets/
@@ -94,22 +95,84 @@ reaches a hosted copy.
 
 **Change the admin password** — `CONFIG.adminPassword` in `js/data.js`.
 
-## Important: this is a front-end only
+## Sharing the catalogue with everyone (Supabase)
 
-Uploaded designs and any categories you add are saved in **localStorage**, which
-lives in one browser on one computer. That is fine for demos and for designing the site, but a customer
-visiting your hosted site would only see the starter products in `js/data.js`.
+Out of the box, designs are saved in **localStorage** — one browser, one
+computer. Visitors to your hosted site see only the starter products in
+`js/data.js`. That is fine while you design the site.
 
-To take real orders you need a backend. Three realistic paths:
+Connect Supabase and it changes completely: every visitor reads the same
+catalogue, and browsers that are already open update **the moment you publish**,
+with no refresh. Setup is about five minutes and costs nothing on the free tier.
 
-1. **Shopify** — rebuild this design as a Shopify theme. You get the admin,
-   image hosting, Razorpay/UPI checkout and shipping out of the box.
-2. **Supabase or Firebase** — keep this front-end, replace the two functions in
-   `js/storage.js` (`Catalogue.load` and `Catalogue.save`) with database calls.
-   Product photos go to their storage bucket instead of base64.
-3. **Your own API** — same swap, pointed at your server.
+### 1. Make a project
 
-The code is deliberately structured so that only `js/storage.js` has to change.
+Sign up at [supabase.com](https://supabase.com), create a project, and pick a
+region close to your customers (Mumbai / `ap-south-1` for India).
+
+### 2. Create the tables
+
+In the Supabase dashboard open **SQL Editor → New query**, paste the whole of
+[`supabase.sql`](supabase.sql) from this folder, and press **Run**. It creates
+the catalogue and category tables, the photo bucket, the access rules, turns on
+live updates, and loads the six starter designs. Running it twice is harmless.
+
+### 3. Paste your keys
+
+In the dashboard go to **Settings → API** and copy the **Project URL** and the
+**anon public** key. Put them in `CONFIG.supabase` in `js/data.js`:
+
+```js
+supabase: {
+  url:    'https://abcdefgh.supabase.co',
+  key:    'eyJhbGciOi...',          // the anon public key
+  bucket: 'photos',
+  sdk:    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js'
+}
+```
+
+The anon key is designed to be public — it is safe in a file visitors can read.
+
+### 4. Check it worked
+
+Reload the store and open the browser console (F12). You should see:
+
+```
+Ruaa: catalogue is shared through Supabase.
+```
+
+Publish something in the admin panel with the storefront open in another window
+and it should appear there within about a second, on any device.
+
+Leave `url` and `key` empty at any time and the site quietly goes back to
+localStorage, so nothing breaks while you are setting up.
+
+### What changes once it is connected
+
+| | Before | After |
+|---|---|---|
+| Who sees your uploads | only your browser | everyone |
+| Updates for open visitors | never | within ~1 second |
+| Product photos | base64, ~5 MB total limit | files in a bucket, 1 GB free |
+| Categories | per browser | shared |
+
+### Locking down writes
+
+`supabase.sql` allows **anyone to write** to your catalogue. That is deliberate:
+the admin password sits in `js/data.js`, where any visitor can read it, so a
+password-only gate is not real security anyway. For a demo or a soft launch this
+is fine — you are trading a small risk for a five-minute setup.
+
+Before you take real money through this site, switch to Supabase Auth: create a
+single admin user, sign in with it instead of the `js/data.js` password, and
+change the write policies in `supabase.sql` from `using (true)` to
+`using (auth.role() = 'authenticated')`. Ask and I will wire it up.
+
+## Still not a shop
+
+Even with Supabase, this takes no payments. The bag and Checkout button are a
+demo. To sell, add Razorpay or a Shopify checkout, or rebuild the design as a
+Shopify theme and get admin, image hosting, UPI checkout and shipping in one go.
 
 ## Deploying the static version
 
